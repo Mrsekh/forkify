@@ -1,6 +1,6 @@
 import Search from './models/Search';
 import * as searchView from './views/searchView';
-import {elements} from './views/base';
+import {elements,loader,clearLoader} from './views/base';
 /* State management 
 // Global state of the app
 // Search object
@@ -17,9 +17,11 @@ const controlSearch = async () => {
         state.search = new Search(query);
         // prepare UI for the result
         searchView.clearInput();
-        searchView.clearSearchResult();   
+        searchView.clearSearchResult(); 
+        loader(elements.serachLoader);
         //Getting the recepie results
         await state.search.getResult();
+        clearLoader();
     
         // Render results in UI
         console.log(state.search.result);
@@ -31,4 +33,15 @@ const controlSearch = async () => {
 elements.submitSearch.addEventListener('submit', (event) => {
     event.preventDefault();
     controlSearch();
+});
+
+elements.searchResPages.addEventListener('click' ,e => {
+    const btn = e.target.closest('.btn-inline');
+    if(btn) {
+        const goToPage = parseInt(btn.dataset.goto);
+        searchView.clearSearchResult(); 
+        searchView.renderResults(state.search.result,goToPage,10);
+        // console.log(goToPage);
+    }
+    // console.log(btn);
 });
